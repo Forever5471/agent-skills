@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Intake Form</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #14171f;
+      --muted: #687083;
+      --line: #dfe3f3;
+      --line-strong: #cdd4ea;
+      --accent: #6257ff;
+      --accent-dark: #4d43dc;
+      --accent-soft: #eeedff;
+      --danger: #b42318;
+      --success: #067647;
+      --shadow: 0 18px 46px rgba(20, 23, 31, 0.11);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #fbfcff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+    main {
+      width: min(960px, calc(100vw - 28px));
+      margin: 28px auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+    .purpose {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .meta {
+      flex: none;
+      display: grid;
+      gap: 6px;
+      justify-items: end;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .body {
+      max-height: min(68vh, 740px);
+      overflow: auto;
+    }
+    form {
+      padding: 20px 24px 24px;
+    }
+    .field {
+      margin: 0 0 22px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #f0f2f7;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    label, .label {
+      display: block;
+      font-size: 14px;
+      font-weight: 650;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .required {
+      color: var(--danger);
+      margin-left: 3px;
+    }
+    input[type="text"], input[type="email"], input[type="url"], input[type="number"],
+    input[type="date"], input[type="datetime-local"], input[type="file"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+    input[type="file"] {
+      padding: 9px 12px;
+    }
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    .option {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .option:hover {
+      border-color: var(--line-strong);
+      background: #fcfdff;
+    }
+    .option:has(input:checked) {
+      border-color: var(--accent);
+      background: #fbfaff;
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .option input {
+      width: 17px;
+      height: 17px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+    }
+    .option strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    .option span span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+    .help {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+      line-height: 1.45;
+    }
+    .error {
+      display: none;
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+    .footer {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 24px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(10px);
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .primary:hover { background: var(--accent-dark); }
+    .secondary {
+      background: #eef0f6;
+      color: var(--text);
+    }
+    .result {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding: 20px 24px 24px;
+      background: #fbfcff;
+    }
+    .result textarea {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      min-height: 260px;
+      white-space: pre;
+    }
+    .result-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .toast {
+      color: var(--success);
+      font-size: 13px;
+      align-self: center;
+      display: none;
+    }
+    @media (max-width: 640px) {
+      main { width: min(100vw - 18px, 960px); margin: 9px auto; }
+      .header { display: block; padding: 16px; }
+      .meta { justify-items: start; margin-top: 12px; }
+      form { padding: 16px; }
+      .footer { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <div class="header">
+        <div>
+          <h1 id="title">Agent Intake Form</h1>
+          <p id="purpose" class="purpose"></p>
+        </div>
+        <div class="meta">
+          <div id="interactionId"></div>
+          <div id="step"></div>
+        </div>
+      </div>
+      <div class="body">
+        <form id="form" novalidate></form>
+      </div>
+      <div class="footer" id="footer"></div>
+      <section id="result" class="result">
+        <div class="label">提交结果 JSON</div>
+        <textarea id="resultText" readonly></textarea>
+        <p class="help">请复制这段 JSON，粘贴回智能体对话框。</p>
+        <div class="result-actions">
+          <span id="copyToast" class="toast">已复制</span>
+          <button class="secondary" type="button" id="copyBtn">复制 JSON</button>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script id="schema-data" type="application/json">__FORM_SCHEMA_JSON__</script>
+  <script>
+    const MOCK_SCHEMA = {
+      type: "external_form",
+      schemaVersion: "2.0",
+      interactionId: "form_mock_all_fields_001",
+      title: "通用信息收集表单 Mock",
+      purpose: "这个模板直接打开时会展示所有支持字段类型；智能体生成真实表单时会用实际 schema 替换 mock。",
+      returnMode: "copy_back",
+      step: {
+        id: "all_fields_demo",
+        index: 1,
+        total: 1,
+        label: "全部字段"
+      },
+      fields: [
+        {
+          kind: "single",
+          id: "request_type",
+          header: "单选",
+          label: "请选择任务类型",
+          required: true,
+          options: [
+            { label: "报销", value: "expense", description: "提交费用报销申请" },
+            { label: "采购", value: "procurement", description: "发起办公用品或服务采购" },
+            { label: "审批", value: "approval", description: "发起内部审批流程" }
+          ],
+          defaultValue: "expense"
+        },
+        {
+          kind: "multi",
+          id: "attachments_needed",
+          header: "多选",
+          label: "需要提供哪些材料？",
+          required: true,
+          minSelected: 1,
+          maxSelected: 3,
+          options: [
+            { label: "发票", value: "invoice", description: "正规发票或电子发票" },
+            { label: "合同", value: "contract", description: "采购或服务合同" },
+            { label: "付款凭证", value: "payment_proof", description: "付款截图、银行回单等" },
+            { label: "其他说明", value: "other_note", description: "额外补充说明材料" }
+          ],
+          defaultValue: ["invoice"]
+        },
+        {
+          kind: "text",
+          id: "applicant_name",
+          header: "文本",
+          label: "申请人姓名",
+          required: true,
+          placeholder: "例如 张三",
+          minLength: 2,
+          maxLength: 30
+        },
+        {
+          kind: "email",
+          id: "contact_email",
+          header: "邮箱",
+          label: "联系人邮箱",
+          required: true,
+          placeholder: "name@example.com"
+        },
+        {
+          kind: "url",
+          id: "reference_url",
+          header: "链接",
+          label: "相关链接（可选）",
+          required: false,
+          placeholder: "https://example.com"
+        },
+        {
+          kind: "number",
+          id: "amount",
+          header: "数字",
+          label: "金额",
+          required: true,
+          min: 0.01,
+          max: 100000,
+          step: 0.01,
+          placeholder: "例如 128.50"
+        },
+        {
+          kind: "date",
+          id: "expense_date",
+          header: "日期",
+          label: "发生日期",
+          required: true,
+          min: "2025-01-01",
+          max: "2026-12-31"
+        },
+        {
+          kind: "datetime",
+          id: "submit_before",
+          header: "时间",
+          label: "期望处理时间",
+          required: false,
+          helpText: "如果没有明确时间，可以留空。"
+        },
+        {
+          kind: "file",
+          id: "receipt_files",
+          header: "文件",
+          label: "票据或附件",
+          required: false,
+          accept: [".pdf", ".jpg", ".png", "application/pdf", "image/jpeg", "image/png"],
+          multiple: true,
+          maxFiles: 3,
+          maxSizeMB: 10,
+          helpText: "copy-back 模式只会返回文件名、类型和大小，不会上传文件内容。"
+        },
+        {
+          kind: "textarea",
+          id: "notes",
+          header: "长文本",
+          label: "补充说明（可选）",
+          required: false,
+          placeholder: "请输入需要补充的背景信息",
+          maxLength: 500
+        }
+      ],
+      submitLabel: "生成提交结果",
+      cancelLabel: "取消",
+      allowCancel: true
+    };
+
+    const FORM_SCHEMA = (() => {
+      const schemaText = document.getElementById("schema-data").textContent.trim();
+      if (schemaText && schemaText !== "__FORM_SCHEMA_JSON__") {
+        try { return JSON.parse(schemaText); } catch (error) { console.warn("Invalid injected schema, using mock.", error); }
+      }
+      return MOCK_SCHEMA;
+    })();
+
+    const formEl = document.getElementById("form");
+    const footerEl = document.getElementById("footer");
+    const resultEl = document.getElementById("result");
+    const resultText = document.getElementById("resultText");
+    const copyToast = document.getElementById("copyToast");
+
+    document.getElementById("title").textContent = FORM_SCHEMA.title || "Agent Intake Form";
+    document.title = FORM_SCHEMA.title || "Agent Intake Form";
+    document.getElementById("purpose").textContent = FORM_SCHEMA.purpose || "";
+    document.getElementById("interactionId").textContent = FORM_SCHEMA.interactionId ? `interactionId: ${FORM_SCHEMA.interactionId}` : "";
+    document.getElementById("step").textContent = FORM_SCHEMA.step ? `step: ${FORM_SCHEMA.step.label || FORM_SCHEMA.step.id} (${FORM_SCHEMA.step.index || "?"}/${FORM_SCHEMA.step.total || "?"})` : "";
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function fieldLabel(field) {
+      return `${escapeHtml(field.label || field.id)}${field.required !== false ? '<span class="required">*</span>' : ""}`;
+    }
+
+    function optionChecked(field, option) {
+      const def = field.defaultValue;
+      if (field.kind === "multi" && Array.isArray(def)) return def.includes(option.value) ? "checked" : "";
+      return def === option.value ? "checked" : "";
+    }
+
+    function renderOptions(field, inputType) {
+      return `<div class="options">${(field.options || []).map(option => `
+        <label class="option">
+          <input type="${inputType}" name="${escapeHtml(field.id)}" value="${escapeHtml(option.value)}" ${optionChecked(field, option)}>
+          <span>
+            <strong>${escapeHtml(option.label)}</strong>
+            <span>${escapeHtml(option.description || option.value)}</span>
+          </span>
+        </label>
+      `).join("")}</div>`;
+    }
+
+    function renderField(field) {
+      const required = field.required !== false ? "required" : "";
+      const placeholder = escapeHtml(field.placeholder || "");
+      const defaultValue = escapeHtml(field.defaultValue && !Array.isArray(field.defaultValue) ? field.defaultValue : "");
+      const common = `id="${escapeHtml(field.id)}" name="${escapeHtml(field.id)}" ${required}`;
+      let control = "";
+
+      if (field.kind === "single") {
+        control = renderOptions(field, "radio");
+      } else if (field.kind === "multi") {
+        control = renderOptions(field, "checkbox");
+      } else if (field.kind === "textarea") {
+        control = `<textarea ${common} placeholder="${placeholder}" minlength="${field.minLength || ""}" maxlength="${field.maxLength || ""}">${defaultValue}</textarea>`;
+      } else if (field.kind === "email") {
+        control = `<input type="email" ${common} placeholder="${placeholder}" value="${defaultValue}">`;
+      } else if (field.kind === "url") {
+        control = `<input type="url" ${common} placeholder="${placeholder}" value="${defaultValue}">`;
+      } else if (field.kind === "number") {
+        control = `<input type="number" ${common} placeholder="${placeholder}" min="${field.min ?? ""}" max="${field.max ?? ""}" step="${field.step ?? "any"}" value="${defaultValue}">`;
+      } else if (field.kind === "date") {
+        control = `<input type="date" ${common} min="${field.min || ""}" max="${field.max || ""}" value="${defaultValue}">`;
+      } else if (field.kind === "datetime") {
+        control = `<input type="datetime-local" ${common} min="${field.min || ""}" max="${field.max || ""}" value="${defaultValue}">`;
+      } else if (field.kind === "file") {
+        const accept = Array.isArray(field.accept) ? field.accept.join(",") : (field.accept || "");
+        control = `<input type="file" ${common} accept="${escapeHtml(accept)}" ${field.multiple ? "multiple" : ""}>`;
+      } else {
+        control = `<input type="text" ${common} placeholder="${placeholder}" value="${defaultValue}" minlength="${field.minLength || ""}" maxlength="${field.maxLength || ""}" pattern="${escapeHtml(field.pattern || "")}">`;
+      }
+
+      return `<div class="field" data-field-id="${escapeHtml(field.id)}" data-kind="${escapeHtml(field.kind)}">
+        <div class="chip">${escapeHtml(field.header || field.kind)}</div>
+        <div class="label">${fieldLabel(field)}</div>
+        ${control}
+        ${field.helpText ? `<div class="help">${escapeHtml(field.helpText)}</div>` : ""}
+        ${field.patternHint ? `<div class="help">格式提示：${escapeHtml(field.patternHint)}</div>` : ""}
+        <div class="error"></div>
+      </div>`;
+    }
+
+    formEl.innerHTML = (FORM_SCHEMA.fields || []).map(renderField).join("");
+    footerEl.innerHTML = `
+      ${FORM_SCHEMA.allowCancel === false ? "" : `<button class="secondary" type="button" id="cancelBtn">${escapeHtml(FORM_SCHEMA.cancelLabel || "取消")}</button>`}
+      <button class="primary" type="submit" form="form">${escapeHtml(FORM_SCHEMA.submitLabel || "生成提交结果")}</button>`;
+
+    function fieldValue(field) {
+      if (field.kind === "single") {
+        const checked = formEl.querySelector(`input[name="${CSS.escape(field.id)}"]:checked`);
+        return checked ? checked.value : "";
+      }
+      if (field.kind === "multi") {
+        return Array.from(formEl.querySelectorAll(`input[name="${CSS.escape(field.id)}"]:checked`)).map(el => el.value);
+      }
+      if (field.kind === "number") {
+        const el = formEl.elements[field.id];
+        return el && el.value !== "" ? Number(el.value) : "";
+      }
+      if (field.kind === "file") {
+        const el = formEl.elements[field.id];
+        return el ? Array.from(el.files || []).map(file => ({
+          name: file.name,
+          mimeType: file.type || "application/octet-stream",
+          sizeBytes: file.size
+        })) : [];
+      }
+      const el = formEl.elements[field.id];
+      return el ? String(el.value || "").trim() : "";
+    }
+
+    function allowedValues(field) {
+      return new Set((field.options || []).map(option => option.value));
+    }
+
+    function setError(field, message) {
+      const wrapper = formEl.querySelector(`[data-field-id="${CSS.escape(field.id)}"]`);
+      const error = wrapper.querySelector(".error");
+      error.textContent = message || "";
+      error.style.display = message ? "block" : "none";
+    }
+
+    function validate(values) {
+      let ok = true;
+      for (const field of FORM_SCHEMA.fields || []) {
+        setError(field, "");
+        const value = values[field.id];
+        const missing = Array.isArray(value) ? value.length === 0 : value === "" || value == null;
+        if (field.required !== false && missing) {
+          ok = false;
+          setError(field, "此字段必填。");
+          continue;
+        }
+        if (missing) continue;
+
+        if (field.kind === "single" && !allowedValues(field).has(value)) {
+          ok = false;
+          setError(field, "请选择一个有效选项。");
+        }
+        if (field.kind === "multi") {
+          const allowed = allowedValues(field);
+          if (value.some(item => !allowed.has(item))) {
+            ok = false;
+            setError(field, "包含无效选项。");
+          } else if (field.minSelected != null && value.length < field.minSelected) {
+            ok = false;
+            setError(field, `至少选择 ${field.minSelected} 项。`);
+          } else if (field.maxSelected != null && value.length > field.maxSelected) {
+            ok = false;
+            setError(field, `最多选择 ${field.maxSelected} 项。`);
+          }
+        }
+        if (field.kind === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          ok = false;
+          setError(field, "请输入有效邮箱地址。");
+        }
+        if (field.kind === "url" && !/^https?:\/\//i.test(value)) {
+          ok = false;
+          setError(field, "请输入以 http:// 或 https:// 开头的有效链接。");
+        }
+        if (field.kind === "number") {
+          if (Number.isNaN(value)) {
+            ok = false;
+            setError(field, "请输入有效数字。");
+          } else if (field.min != null && value < field.min) {
+            ok = false;
+            setError(field, `不能小于 ${field.min}。`);
+          } else if (field.max != null && value > field.max) {
+            ok = false;
+            setError(field, `不能大于 ${field.max}。`);
+          } else if (field.integer && !Number.isInteger(value)) {
+            ok = false;
+            setError(field, "请输入整数。");
+          }
+        }
+        if (field.kind === "file") {
+          if (field.maxFiles != null && value.length > field.maxFiles) {
+            ok = false;
+            setError(field, `最多上传 ${field.maxFiles} 个文件。`);
+          } else if (field.maxSizeMB != null && value.some(file => file.sizeBytes > field.maxSizeMB * 1024 * 1024)) {
+            ok = false;
+            setError(field, `单个文件不能超过 ${field.maxSizeMB}MB。`);
+          }
+        }
+      }
+      return ok;
+    }
+
+    function buildSubmission(status) {
+      const values = {};
+      for (const field of FORM_SCHEMA.fields || []) {
+        values[field.id] = status === "cancelled" ? null : fieldValue(field);
+      }
+      return {
+        type: "form_submission",
+        source: "external_form_link",
+        interactionId: FORM_SCHEMA.interactionId,
+        parentInteractionId: FORM_SCHEMA.parentInteractionId || null,
+        status,
+        step: FORM_SCHEMA.step || null,
+        values,
+        notes: "",
+        submittedAt: new Date().toISOString()
+      };
+    }
+
+    function showResult(payload) {
+      resultText.value = JSON.stringify(payload, null, 2);
+      resultEl.style.display = "block";
+      resultEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    formEl.addEventListener("submit", event => {
+      event.preventDefault();
+      const payload = buildSubmission("submitted");
+      if (!validate(payload.values)) return;
+      showResult(payload);
+    });
+
+    const cancelBtn = document.getElementById("cancelBtn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => showResult(buildSubmission("cancelled")));
+    }
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(resultText.value);
+        copyToast.style.display = "inline";
+        setTimeout(() => { copyToast.style.display = "none"; }, 1300);
+      } catch (error) {
+        resultText.select();
+        document.execCommand("copy");
+      }
+    });
+  </script>
+</body>
+</html>
